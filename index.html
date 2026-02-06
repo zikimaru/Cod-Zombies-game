@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Call of Duty World at War - Bunker Der Untoten Zombies in Three.js">
+  <meta name="theme-color" content="#1a1a0e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>COD Zombies - Bunker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Game Canvas Container -->
+  <div id="game-container"></div>
+
+  <!-- Crosshair Overlay -->
+  <div id="crosshair">
+    <div class="crosshair-line crosshair-top"></div>
+    <div class="crosshair-line crosshair-right"></div>
+    <div class="crosshair-line crosshair-bottom"></div>
+    <div class="crosshair-line crosshair-left"></div>
+    <div class="crosshair-dot"></div>
+  </div>
+
+  <!-- Blood Damage Overlay -->
+  <div id="blood-overlay"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <!-- Points Display -->
+    <div id="points-display">
+      <span class="hud-label">POINTS</span>
+      <span id="points-value">500</span>
+    </div>
+
+    <!-- Round Display -->
+    <div id="round-display">
+      <span class="hud-label">ROUND</span>
+      <span id="round-value">1</span>
+    </div>
+
+    <!-- Ammo Counter -->
+    <div id="ammo-display">
+      <span id="ammo-current">30</span>
+      <span class="ammo-separator">/</span>
+      <span id="ammo-reserve">120</span>
+    </div>
+
+    <!-- Weapon Name -->
+    <div id="weapon-name">M1911</div>
+
+    <!-- Health Indicator -->
+    <div id="health-indicator"></div>
+
+    <!-- Wall Buy Prompt -->
+    <div id="wall-buy-prompt" class="hidden">
+      <span class="prompt-cost">750</span>
+      <span class="prompt-text">Press F to buy</span>
+      <span class="prompt-weapon">Kar98k</span>
+    </div>
+
+    <!-- Interaction Prompt -->
+    <div id="interaction-prompt" class="hidden">
+      Press F to interact
+    </div>
+
+    <!-- Round Announcement -->
+    <div id="round-announcement" class="hidden">
+      <span class="round-announce-text">ROUND</span>
+      <span class="round-announce-number">1</span>
+    </div>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-emblem">
+        <div class="emblem-outer"></div>
+        <div class="emblem-inner"></div>
+        <div class="emblem-star">&#9733;</div>
+      </div>
+      <h1 class="loading-title">CALL OF DUTY</h1>
+      <h2 class="loading-subtitle">WORLD AT WAR</h2>
+      <div class="loading-divider"></div>
+      <p class="loading-map-name">BUNKER DER UNTOTEN</p>
+      <div class="loading-bar-container">
+        <div class="loading-bar-bg">
+          <div id="loading-bar-fill" class="loading-bar-fill"></div>
+        </div>
+        <p id="loading-text" class="loading-status">LOADING ASSETS...</p>
+      </div>
+      <div class="loading-hints">
+        <p class="hint-text">TIP: Aim for the head for maximum damage</p>
+      </div>
+      <div class="loading-footer">
+        <p class="classification-text">CLASSIFIED // TOP SECRET</p>
+        <div class="loading-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Screen -->
+  <div id="start-screen" class="hidden">
+    <div class="start-bg-noise"></div>
+    <div class="start-content">
+      <div class="title-container">
+        <div class="title-decoration top-left"></div>
+        <div class="title-decoration top-right"></div>
+        <h1 class="game-title">BUNKER<br><span class="title-der">DER</span><br>UNTOTEN</h1>
+        <div class="title-decoration bottom-left"></div>
+        <div class="title-decoration bottom-right"></div>
+      </div>
+      <p class="start-subtitle">THE DEAD WALK AMONG US</p>
+      <div class="start-divider"></div>
+      <button id="start-button" class="start-btn">CLICK TO START</button>
+      <div class="start-controls">
+        <p>WASD - MOVE &nbsp;|&nbsp; MOUSE - AIM &nbsp;|&nbsp; CLICK - SHOOT &nbsp;|&nbsp; R - RELOAD &nbsp;|&nbsp; F - INTERACT</p>
+      </div>
+    </div>
+    <div class="start-footer">
+      <p class="start-version">BUILD v1.0.0 // THREE.JS ENGINE</p>
+    </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div id="game-over-screen" class="hidden">
+    <div class="gameover-bg-noise"></div>
+    <div class="gameover-content">
+      <h1 class="gameover-title">GAME OVER</h1>
+      <div class="gameover-divider"></div>
+      <div class="gameover-stats">
+        <div class="stat-row">
+          <span class="stat-label">SURVIVED TO ROUND</span>
+          <span id="final-round" class="stat-value">1</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">ZOMBIES KILLED</span>
+          <span id="final-kills" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">HEADSHOTS</span>
+          <span id="final-headshots" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">POINTS EARNED</span>
+          <span id="final-points" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">SHOTS FIRED</span>
+          <span id="final-shots" class="stat-value">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">ACCURACY</span>
+          <span id="final-accuracy" class="stat-value">0%</span>
+        </div>
+      </div>
+      <div class="gameover-divider"></div>
+      <button id="restart-button" class="restart-btn">FIGHT AGAIN</button>
+      <p class="gameover-hint">The dead never rest...</p>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
